@@ -17,6 +17,14 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
 # gem "rack-cors"
 
+gem 'httparty', '~> 0.13.7'
+
+gem 'rufus-scheduler', '~> 3.9', '>= 3.9.1'
+
+gem 'pry', '~> 0.14.1'
+
+gem 'concurrent-ruby', require: 'concurrent'
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
@@ -26,4 +34,3 @@ group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
 end
-
