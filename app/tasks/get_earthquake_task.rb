@@ -6,7 +6,6 @@ require 'json'
 require_relative '../tools/constants'
 
 class GetEarthquakeTask
-  include HTTParty
   include Concurrent::Async
 
   def initialize
@@ -15,11 +14,12 @@ class GetEarthquakeTask
   end
 
   def init
-      scheduler = Rufus::Scheduler.new
-      scheduler.every '1m' do
-        execute_fetch_save
-      end
-      scheduler.join
+      # scheduler = Rufus::Scheduler.new
+      # scheduler.every '1m' do
+      #   execute_fetch_save
+      # end
+      # scheduler.join
+      execute_fetch_save
   end
 
   def execute_fetch_save
@@ -33,20 +33,17 @@ class GetEarthquakeTask
   end
 
   def fetch_earthquake_data_from_usgs
-    puts @url
     response = HTTParty.get(@url, @options)
-    puts response.body
-    if response.nil?
-      puts response
-      puts "La respuesta no es nula"
-      handle_response(response)
-    else
-      puts "La respuesta es nula"
-    end
+    json = handle_response(response)
+    puts response.code
+    save_earthquake_data(json)
   end
 
-  def save_earthquake_data(data)
-    puts data
+  def save_earthquake_data(features)
+    binding.pry
+    features.each do |earthquake_data|
+      earthquake_data['properties']['title']
+    end
   end
 
   def handle_response(response)
