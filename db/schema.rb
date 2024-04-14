@@ -10,25 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_04_13_185807) do
+ActiveRecord::Schema[7.1].define(version: 2024_04_14_025442) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "comments", force: :cascade do |t|
-    t.string "comment"
+    t.text "comment"
+    t.bigint "feature_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "feature_id"
     t.index ["feature_id"], name: "index_comments_on_feature_id"
-  end
-
-  create_table "coordinates", force: :cascade do |t|
-    t.float "longitude"
-    t.float "latitude"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "feature_id"
-    t.index ["feature_id"], name: "index_coordinates_on_feature_id"
   end
 
   create_table "features", force: :cascade do |t|
@@ -39,10 +30,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_13_185807) do
     t.boolean "tsunami"
     t.string "mag_type"
     t.string "title"
+    t.string "type"
+    t.string "url"
+    t.float "latitude"
+    t.float "longitude"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   add_foreign_key "comments", "features"
-  add_foreign_key "coordinates", "features"
 end

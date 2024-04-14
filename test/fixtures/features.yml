@@ -4,16 +4,24 @@ one:
   external_id: MyString
   magnitude: 1.5
   place: MyString
-  time: 2024-04-13 13:13:38
+  time: 2024-04-13 21:53:12
   tsunami: false
   mag_type: MyString
   title: MyString
+  type: 
+  url: MyString
+  latitude: 1.5
+  longitude: 1.5
 
 two:
   external_id: MyString
   magnitude: 1.5
   place: MyString
-  time: 2024-04-13 13:13:38
+  time: 2024-04-13 21:53:12
   tsunami: false
   mag_type: MyString
   title: MyString
+  type: 
+  url: MyString
+  latitude: 1.5
+  longitude: 1.5
