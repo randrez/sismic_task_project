@@ -5,7 +5,7 @@ require 'httparty'
 require_relative '../tools/constants'
 require_relative '../tools/utils'
 
-class GetFeatureTask
+class GetFeaturesTask
   include Concurrent::Async
 
   def initialize
@@ -16,12 +16,12 @@ class GetFeatureTask
   def start
       fetch_features_data_from_usgs
       scheduler = Rufus::Scheduler.new
-      scheduler.every '1m' do
+      scheduler.every '1h' do
         fetch_features_data_from_usgs
       end
       scheduler.join
   rescue Exception => e
-      puts e.message
+    save_log(e.backtrace, e.message)
   end
 
   def fetch_features_data_from_usgs
@@ -34,10 +34,10 @@ class GetFeatureTask
         save_all_features(features_result)
       end
     else
-      puts "Error fetching seismic data: #{response.code}"
+      save_log("fetch_features_data_from_usgs", "Error fetching seismic data: #{response.code}")
     end
   rescue Exception => e
-    puts e.message
+    save_log(e.backtrace, e.message)
   end
 
   def save_all_features(features)
@@ -53,7 +53,7 @@ class GetFeatureTask
         tsunami: properties['tsunami'] > 0,
         mag_type: properties['magType'],
         title: properties['title'],
-        type: properties['type'],
+        feature_type: properties['type'],
         url: properties['url'],
         latitude: coordinates[1],
         longitude: coordinates[0]
@@ -62,13 +62,19 @@ class GetFeatureTask
 
     Feature.insert_all(features_data)
   rescue Exception => e
-    puts e.message
+    save_log(e.backtrace, e.message)
   end
 
   def validate_features_exists(feature_response)
     existing_external_ids = Feature.pluck(:external_id)
     features_to_insert = feature_response.reject { |feature| existing_external_ids.include?(feature['id']) }
     features_to_insert
+  rescue
+    save_log(e.backtrace, e.message)
+  end
+
+  def save_log(trace, message)
+    Log.create(trace:trace, message:message)
   end
 
 end

@@ -1,49 +1,51 @@
 class FeatureRepository
   def initialize
-    @model = Feature
+    @feature = Feature
+    @log = Log
   end
 
-  def all(params)
-    features  = @model.all
-
-    features  = features.where(mag_type: params[:mag_type].split(',')) if params[:mag_type].present?
-
-    per_page = params[:per_page].to_i.clamp(1, 1000)
-    current_page = params[:page].to_i.clamp(1, Float::INFINITY)
+  def filter(params)
+    features = Set.new
     total = features.count
-    features = features.limit(per_page).offset((current_page - 1) * per_page)
+    current_page = 1
+    per_page = 100
+    mag_types = ""
 
-    list_data = features.map do |feature|
-      json:{
-        id: feature.id,
-        type: feature.type,
-        attributes: {
-          external_id: feature.external_id,
-          magnitude: feature.magnitude,
-          place: feature.place,
-          time: feature.time,
-          tsunami: feature.tsunami,
-          mag_type: feature.mag_type,
-          title: feature.title,
-          coordinates: {
-            longitude: feature.longitude,
-            latitude: feature.latitude
-          }
-        },
-        links: json:{
-          external_url: feature.url
-        }
-      }
+    if params.present?
+      if params[:per_page].present? && params[:page].present?
+        per_page = params[:per_page].to_i.clamp(1, 1000)
+        current_page = params[:page].to_i.clamp(1, Float::INFINITY)
+      end
+
+      if params[:mag_types].present?
+        mag_types = params[:mag_types].split(',')
+      end
+
+      if mag_types.size > 0
+        features = @feature.where("mag_type IN (?)", mag_types).limit(per_page).offset((current_page - 1) * per_page)
+      else
+        features = @feature.limit(per_page).offset((current_page - 1) * per_page)
+      end
+      total = features.count
+    else
+      features = @feature.limit(per_page).offset((current_page - 1) * per_page)
+      total = features.count
     end
 
-    render json: {
-      data: list_data,
-      pagination: {
-        current_page: current_page,
-        total: total,
-        per_page: per_page
-      }
+    return {
+      list: features,
+      current_page: current_page,
+      total: total,
+      per_page: per_page
     }
+  rescue Exception => e
+    save_log(e.backtrace, e.message)
+  end
+
+  private
+
+  def save_log(trace, message)
+    Log.create(trace:trace, message:message)
   end
 
 end
