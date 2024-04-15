@@ -45,13 +45,17 @@ class Api::FeaturesController < ApplicationController
   end
 
   def create_comment
-    @comment_repository.save(comment_params, params[:id])
+    comment = @comment_repository.save(params[:comment], params[:id])
+    if comment.valid?
+      render json:comment, status: :ok
+    else
+      render json: { error: "Error no save comment" }, status: :bad_request
+    end
   end
 
-  private
 
   def comment_params
-    params.require(:comment).permit(:comment)
+    params.permit(:comment)
   end
 
 end

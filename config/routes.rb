@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
   namespace :api do
-    resources :features, only: [:index] do
-      resources :comments, only: [:create_comment]
-    end
+    get 'features', to: 'features#index'
+    post 'features/:id/comment', to: 'features#create_comment'
   end
 end
