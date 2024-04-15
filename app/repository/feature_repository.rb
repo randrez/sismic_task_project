@@ -6,7 +6,7 @@ class FeatureRepository
 
   def filter(params)
     features = Set.new
-    total = features.count
+    total = @feature.all.count
     current_page = 1
     per_page = 100
     mag_types = ""
@@ -26,10 +26,8 @@ class FeatureRepository
       else
         features = @feature.limit(per_page).offset((current_page - 1) * per_page)
       end
-      total = features.count
     else
       features = @feature.limit(per_page).offset((current_page - 1) * per_page)
-      total = features.count
     end
 
     return {
